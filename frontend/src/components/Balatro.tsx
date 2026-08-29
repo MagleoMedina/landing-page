@@ -136,6 +136,12 @@ export default function Balatro({
   mouseInteraction = true
 }: BalatroProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const colorsRef = useRef({ color1, color2, color3 });
+  const programRef = useRef<Program | null>(null);
+
+  useEffect(() => {
+    colorsRef.current = { color1, color2, color3 };
+  }, [color1, color2, color3]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -168,9 +174,9 @@ export default function Balatro({
         uSpinRotation: { value: spinRotation },
         uSpinSpeed: { value: spinSpeed },
         uOffset: { value: offset },
-        uColor1: { value: hexToVec4(color1) },
-        uColor2: { value: hexToVec4(color2) },
-        uColor3: { value: hexToVec4(color3) },
+        uColor1: { value: hexToVec4(colorsRef.current.color1) },
+        uColor2: { value: hexToVec4(colorsRef.current.color2) },
+        uColor3: { value: hexToVec4(colorsRef.current.color3) },
         uContrast: { value: contrast },
         uLighting: { value: lighting },
         uSpinAmount: { value: spinAmount },
@@ -180,6 +186,7 @@ export default function Balatro({
         uMouse: { value: [0.5, 0.5] }
       }
     });
+    programRef.current = program;
 
     const mesh = new Mesh(gl, { geometry, program });
     let animationFrameId: number;
@@ -207,14 +214,12 @@ export default function Balatro({
       container.removeEventListener('mousemove', handleMouseMove);
       container.removeChild(gl.canvas);
       gl.getExtension('WEBGL_lose_context')?.loseContext();
+      programRef.current = null;
     };
   }, [
     spinRotation,
     spinSpeed,
     offset,
-    color1,
-    color2,
-    color3,
     contrast,
     lighting,
     spinAmount,
@@ -223,6 +228,14 @@ export default function Balatro({
     isRotate,
     mouseInteraction
   ]);
+
+  useEffect(() => {
+    const program = programRef.current;
+    if (!program) return;
+    program.uniforms.uColor1.value = hexToVec4(colorsRef.current.color1);
+    program.uniforms.uColor2.value = hexToVec4(colorsRef.current.color2);
+    program.uniforms.uColor3.value = hexToVec4(colorsRef.current.color3);
+  }, [color1, color2, color3]);
 
   return <div ref={containerRef} className="balatro-container" />;
 }

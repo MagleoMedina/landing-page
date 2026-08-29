@@ -21,6 +21,7 @@ import {
   SiVercel,
 } from 'react-icons/si'
 import JavaIcon, { type JavaIconProps } from '../icons/JavaIcon'
+import GitHubStats from './GitHubStats'
 import { techStack } from '../../data/portfolio'
 
 type TechIcon = (props: JavaIconProps) => ReactNode
@@ -78,6 +79,7 @@ export default function TechStack() {
             </div>
           ))}
         </div>
+        <GitHubStats />
       </div>
     </section>
   )

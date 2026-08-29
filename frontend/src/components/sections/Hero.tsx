@@ -1,18 +1,44 @@
 import Balatro from '../Balatro'
 import ProfileCard from '../ProfileCard'
+import TextType from '../TextType'
+import { useTheme } from '../../use-theme'
 import { profile } from '../../data/portfolio'
 
 export default function Hero() {
+  const { theme } = useTheme()
+
   return (
     <section id="inicio" className="hero-section">
       <div className="hero-bg" aria-hidden="true">
-        <Balatro color1="#4a148c" color2="#0b3d91" color3="#0a0a14" pixelFilter={700} />
+        <Balatro
+          color1={theme === 'light' ? '#991b1b' : '#4a148c'}
+          color2="#0b3d91"
+          color3="#0a0a14"
+          pixelFilter={700}
+        />
       </div>
       <div className="hero-content container">
         <div className="hero-text">
           <p className="hero-greeting">{profile.presentation.greeting}</p>
-          <h1 className="hero-name">{profile.name}</h1>
-          <p className="hero-title">{profile.title}</p>
+          <TextType
+            as="h1"
+            className="hero-name"
+            text={profile.name}
+            loop={false}
+            initialDelay={300}
+            typingSpeed={70}
+            showCursor={false}
+          />
+          <TextType
+            as="p"
+            className="hero-title"
+            text={profile.title}
+            loop={false}
+            initialDelay={1400}
+            typingSpeed={70}
+            cursorCharacter="|"
+            cursorClassName="hero-cursor"
+          />
           <p className="hero-bio">{profile.presentation.bio}</p>
           <div className="hero-ctas">
             <a className="btn btn-primary" href={profile.presentation.ctaPrimary.href}>
