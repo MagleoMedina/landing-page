@@ -1,18 +1,20 @@
 import { useState } from 'react'
 import { LuMoon, LuSun } from 'react-icons/lu'
 import { useTheme } from '../../use-theme'
+import { useLang } from '../../use-lang'
 import { profile } from '../../data/portfolio'
 
 const LINKS = [
-  { href: '#inicio', label: 'Inicio' },
-  { href: '#proyectos', label: 'Proyectos' },
-  { href: '#stack', label: 'Tech Stack' },
-  { href: '#contacto', label: 'Contáctame' },
-]
+  { href: '#inicio', key: 'nav.home' },
+  { href: '#proyectos', key: 'nav.projects' },
+  { href: '#stack', key: 'nav.tech' },
+  { href: '#contacto', key: 'nav.contact' },
+] as const
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)
   const { theme, toggleTheme } = useTheme()
+  const { lang, toggleLang, t } = useLang()
   const isDark = theme === 'dark'
 
   return (
@@ -25,16 +27,24 @@ export default function Navbar() {
           {LINKS.map((link) => (
             <li key={link.href}>
               <a href={link.href} onClick={() => setOpen(false)}>
-                {link.label}
+                {t(link.key)}
               </a>
             </li>
           ))}
         </ul>
         <div className="nav-actions">
           <button
+            className="lang-toggle"
+            type="button"
+            aria-label={lang === 'es' ? t('nav.langToEn') : t('nav.langToEs')}
+            onClick={toggleLang}
+          >
+            {lang === 'es' ? 'EN' : 'ES'}
+          </button>
+          <button
             className="theme-toggle"
             type="button"
-            aria-label={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+            aria-label={isDark ? t('nav.themeToLight') : t('nav.themeToDark')}
             aria-pressed={isDark}
             onClick={toggleTheme}
           >
@@ -43,7 +53,7 @@ export default function Navbar() {
           <button
             className="nav-toggle"
             type="button"
-            aria-label="Abrir menú"
+            aria-label={t('nav.openMenu')}
             aria-expanded={open}
             onClick={() => setOpen((value) => !value)}
           >

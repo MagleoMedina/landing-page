@@ -56,6 +56,17 @@ const TextType = ({
 
   const textArray = useMemo(() => (Array.isArray(text) ? text : [text]), [text]);
 
+  const textKey = textArray.join('\u0000');
+  const [previousTextKey, setPreviousTextKey] = useState(textKey);
+
+  if (previousTextKey !== textKey) {
+    setPreviousTextKey(textKey);
+    setDisplayedText('');
+    setCurrentCharIndex(0);
+    setIsDeleting(false);
+    setCurrentTextIndex(0);
+  }
+
   const getRandomSpeed = useCallback(() => {
     if (!variableSpeed) return typingSpeed;
     const { min, max } = variableSpeed;

@@ -22,6 +22,7 @@ import {
 } from 'react-icons/si'
 import JavaIcon, { type JavaIconProps } from '../icons/JavaIcon'
 import GitHubStats from './GitHubStats'
+import { useLang } from '../../use-lang'
 import { techStack } from '../../data/portfolio'
 
 type TechIcon = (props: JavaIconProps) => ReactNode
@@ -50,15 +51,17 @@ const ICONS: Record<string, TechIcon> = {
 }
 
 export default function TechStack() {
+  const { lang, t } = useLang()
+
   return (
     <section id="stack" className="section section-alt">
       <div className="container">
         <h2 className="section-title">Tech Stack</h2>
-        <p className="section-subtitle">Lenguajes, frameworks, herramientas y plataformas que manejo.</p>
+        <p className="section-subtitle">{t('stack.subtitle')}</p>
         <div className="stack-groups">
           {techStack.map((group) => (
-            <div key={group.title} className="stack-group">
-              <h3 className="stack-group-title">{group.title}</h3>
+            <div key={group.title.es} className="stack-group">
+              <h3 className="stack-group-title">{group.title[lang]}</h3>
               <ul className="stack-items">
                 {group.items.map((item) => {
                   const Icon = ICONS[item.icon]

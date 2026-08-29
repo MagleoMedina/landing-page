@@ -7,11 +7,17 @@
     <title>Magleo Medina — Desarrollador Full Stack</title>
     <script>
       try {
-        var stored = localStorage.getItem('theme')
-        if (!stored) stored = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-        document.documentElement.dataset.theme = stored
+        var storedTheme = localStorage.getItem('theme')
+        if (!storedTheme) storedTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+        document.documentElement.dataset.theme = storedTheme
       } catch (e) {
         document.documentElement.dataset.theme = 'light'
+      }
+      try {
+        var storedLang = localStorage.getItem('lang')
+        document.documentElement.lang = storedLang === 'en' ? 'en' : 'es'
+      } catch (e) {
+        document.documentElement.lang = 'es'
       }
     </script>
   </head>

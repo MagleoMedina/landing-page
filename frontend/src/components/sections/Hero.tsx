@@ -2,10 +2,12 @@ import Balatro from '../Balatro'
 import ProfileCard from '../ProfileCard'
 import TextType from '../TextType'
 import { useTheme } from '../../use-theme'
+import { useLang } from '../../use-lang'
 import { profile } from '../../data/portfolio'
 
 export default function Hero() {
   const { theme } = useTheme()
+  const { lang } = useLang()
 
   return (
     <section id="inicio" className="hero-section">
@@ -19,7 +21,7 @@ export default function Hero() {
       </div>
       <div className="hero-content container">
         <div className="hero-text">
-          <p className="hero-greeting">{profile.presentation.greeting}</p>
+          <p className="hero-greeting">{profile.presentation.greeting[lang]}</p>
           <TextType
             as="h1"
             className="hero-name"
@@ -32,20 +34,20 @@ export default function Hero() {
           <TextType
             as="p"
             className="hero-title"
-            text={profile.title}
+            text={profile.title[lang]}
             loop={false}
             initialDelay={1400}
             typingSpeed={70}
             cursorCharacter="|"
             cursorClassName="hero-cursor"
           />
-          <p className="hero-bio">{profile.presentation.bio}</p>
+          <p className="hero-bio">{profile.presentation.bio[lang]}</p>
           <div className="hero-ctas">
             <a className="btn btn-primary" href={profile.presentation.ctaPrimary.href}>
-              {profile.presentation.ctaPrimary.label}
+              {profile.presentation.ctaPrimary.label[lang]}
             </a>
             <a className="btn btn-secondary" href={profile.presentation.ctaSecondary.href}>
-              {profile.presentation.ctaSecondary.label}
+              {profile.presentation.ctaSecondary.label[lang]}
             </a>
           </div>
         </div>
