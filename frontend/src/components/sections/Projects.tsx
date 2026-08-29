@@ -1,54 +1,54 @@
-import ElectricBorder from '../ElectricBorder'
+import ProjectCarousel from './ProjectCarousel'
 import { useLang } from '../../use-lang'
-import { projectCategories } from '../../data/portfolio'
+import { useProjects } from '../../use-projects'
+import type { ProjectCategory } from '../../data/portfolio'
+
+function ProjectSkeleton() {
+  return (
+    <div className="project-card-wrap project-card-skeleton" aria-hidden="true">
+      <div className="skeleton-line skeleton-title" />
+      <div className="skeleton-line" />
+      <div className="skeleton-line skeleton-short" />
+    </div>
+  )
+}
 
 export default function Projects() {
-  const { lang, t } = useLang()
+  const { t } = useLang()
+  const { categories, status, retry } = useProjects()
 
   return (
     <section id="proyectos" className="section">
       <div className="container">
         <h2 className="section-title">{t('projects.title')}</h2>
         <p className="section-subtitle">{t('projects.subtitle')}</p>
-        <div className="project-categories">
-          {projectCategories.map((category) => (
-            <div key={category.id} className="project-category">
-              <h3 className="project-category-title" style={{ color: category.color }}>
-                {category.title[lang]}
-              </h3>
-              <div className="projects-grid">
-                {category.projects.map((project) => (
-                  <ElectricBorder
-                    key={project.title.es}
-                    color={category.color}
-                    borderRadius={16}
-                    className="project-card-wrap"
-                  >
-                    <article className="project-card">
-                      <h4 className="project-title">{project.title[lang]}</h4>
-                      <p className="project-description">{project.description[lang]}</p>
-                      <ul className="project-tags">
-                        {project.tags.map((tag) => (
-                          <li key={tag} className="chip">
-                            {tag}
-                          </li>
-                        ))}
-                      </ul>
-                      <div className="project-links">
-                        <a className="btn btn-small" href={project.repo} target="_blank" rel="noreferrer">
-                          {t('projects.repo')}
-                        </a>
-                        <a className="btn btn-small btn-ghost" href={project.demo} target="_blank" rel="noreferrer">
-                          {t('projects.demo')}
-                        </a>
-                      </div>
-                    </article>
-                  </ElectricBorder>
-                ))}
-              </div>
+        {status === 'loading' && (
+          <div className="project-categories" role="status" aria-live="polite">
+            <div className="projects-grid">
+              <ProjectSkeleton />
+              <ProjectSkeleton />
+              <ProjectSkeleton />
             </div>
-          ))}
-        </div>
+            <span className="projects-loading" aria-hidden="true">
+              {t('projects.loading')}
+            </span>
+          </div>
+        )}
+        {status === 'error' && (
+          <div className="projects-error" role="alert">
+            <p>{t('projects.error')}</p>
+            <button type="button" className="btn" onClick={retry}>
+              {t('projects.retry')}
+            </button>
+          </div>
+        )}
+        {status === 'ready' && (
+          <div className="project-categories">
+            {categories.map((category: ProjectCategory) => (
+              <ProjectCarousel key={category.id} category={category} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   )

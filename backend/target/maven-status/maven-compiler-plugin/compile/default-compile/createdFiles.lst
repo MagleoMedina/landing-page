@@ -1,0 +1,14 @@
+com/backend/landing/projects/ProjectController.class
+com/backend/landing/config/WebConfig.class
+com/backend/landing/LandingApplication.class
+com/backend/landing/contact/ContactRequest.class
+com/backend/landing/contact/ContactController.class
+com/backend/landing/contact/GlobalExceptionHandler.class
+com/backend/landing/projects/ProjectService$1.class
+com/backend/landing/contact/ContactEmailService.class
+com/backend/landing/contact/GlobalExceptionHandler$ErrorResponse.class
+com/backend/landing/projects/ProjectCategory.class
+com/backend/landing/projects/ProjectService.class
+com/backend/landing/contact/ContactController$ContactResponse.class
+com/backend/landing/projects/LocalizedText.class
+com/backend/landing/projects/Project.class

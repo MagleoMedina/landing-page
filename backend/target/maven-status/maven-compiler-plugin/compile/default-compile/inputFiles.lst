@@ -1,0 +1,11 @@
+/home/magleo/Documentos/Codes/landing-page/backend/src/main/java/com/backend/landing/LandingApplication.java
+/home/magleo/Documentos/Codes/landing-page/backend/src/main/java/com/backend/landing/config/WebConfig.java
+/home/magleo/Documentos/Codes/landing-page/backend/src/main/java/com/backend/landing/contact/ContactController.java
+/home/magleo/Documentos/Codes/landing-page/backend/src/main/java/com/backend/landing/contact/ContactEmailService.java
+/home/magleo/Documentos/Codes/landing-page/backend/src/main/java/com/backend/landing/contact/ContactRequest.java
+/home/magleo/Documentos/Codes/landing-page/backend/src/main/java/com/backend/landing/contact/GlobalExceptionHandler.java
+/home/magleo/Documentos/Codes/landing-page/backend/src/main/java/com/backend/landing/projects/LocalizedText.java
+/home/magleo/Documentos/Codes/landing-page/backend/src/main/java/com/backend/landing/projects/Project.java
+/home/magleo/Documentos/Codes/landing-page/backend/src/main/java/com/backend/landing/projects/ProjectCategory.java
+/home/magleo/Documentos/Codes/landing-page/backend/src/main/java/com/backend/landing/projects/ProjectController.java
+/home/magleo/Documentos/Codes/landing-page/backend/src/main/java/com/backend/landing/projects/ProjectService.java

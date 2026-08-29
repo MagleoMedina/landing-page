@@ -23,7 +23,7 @@ import {
 import JavaIcon, { type JavaIconProps } from '../icons/JavaIcon'
 import GitHubStats from './GitHubStats'
 import { useLang } from '../../use-lang'
-import { techStack } from '../../data/portfolio'
+import { techStack, type TechGroup } from '../../data/portfolio'
 
 type TechIcon = (props: JavaIconProps) => ReactNode
 
@@ -50,8 +50,37 @@ const ICONS: Record<string, TechIcon> = {
   railway: SiRailway,
 }
 
+function GroupCard({ group }: { group: TechGroup }) {
+  const { lang } = useLang()
+
+  return (
+    <div className="stack-group">
+      <h3 className="stack-group-title">{group.title[lang]}</h3>
+      <ul className="stack-items">
+        {group.items.map((item) => {
+          const Icon = ICONS[item.icon]
+          return (
+            <li
+              key={item.name}
+              className="tech-icon"
+              title={item.name}
+              aria-label={item.name}
+              data-light={item.light ? 'true' : undefined}
+              style={{ '--tech': item.color } as CSSProperties}
+            >
+              <Icon size={30} />
+            </li>
+          )
+        })}
+      </ul>
+    </div>
+  )
+}
+
 export default function TechStack() {
-  const { lang, t } = useLang()
+  const { t } = useLang()
+  const deploys = techStack.find((group) => group.title.en === 'Deploys')
+  const groups = techStack.filter((group) => group.title.en !== 'Deploys')
 
   return (
     <section id="stack" className="section section-alt">
@@ -59,30 +88,14 @@ export default function TechStack() {
         <h2 className="section-title">Tech Stack</h2>
         <p className="section-subtitle">{t('stack.subtitle')}</p>
         <div className="stack-groups">
-          {techStack.map((group) => (
-            <div key={group.title.es} className="stack-group">
-              <h3 className="stack-group-title">{group.title[lang]}</h3>
-              <ul className="stack-items">
-                {group.items.map((item) => {
-                  const Icon = ICONS[item.icon]
-                  return (
-                    <li
-                      key={item.name}
-                      className="tech-icon"
-                      title={item.name}
-                      aria-label={item.name}
-                      data-light={item.light ? 'true' : undefined}
-                      style={{ '--tech': item.color } as CSSProperties}
-                    >
-                      <Icon size={30} />
-                    </li>
-                  )
-                })}
-              </ul>
-            </div>
+          {groups.map((group) => (
+            <GroupCard key={group.title.es} group={group} />
           ))}
         </div>
-        <GitHubStats />
+        <div className="stack-deploys">
+          {deploys && <GroupCard group={deploys} />}
+          <GitHubStats />
+        </div>
       </div>
     </section>
   )
