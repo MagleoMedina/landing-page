@@ -174,9 +174,3 @@ Tests run: 8, Failures: 0, Errors: 0, Skipped: 0
 ```
 
 ---
-
-## Contribuir / Notas
-
-- Los SVG de los proyectos se sirven desde `frontend/public/assets/projects/`; los datos se editan en `backend/src/main/resources/projects.json` (fallback en `frontend/src/data/portfolio.ts`).
-- El repositorio ignora `.env` pero versiona `.env.example` (sin secretos).
-- No incluye todavía: docs de API generadas, CI/CD pipeline propio (se usa el auto-deploy de Render).
