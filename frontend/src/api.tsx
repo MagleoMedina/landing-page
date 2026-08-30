@@ -1,8 +1,8 @@
 import type { ProjectCategory } from './data/portfolio'
 
-const API_URL: string = 'http://localhost:8080'
- // import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:8080' : '')
-
+const API_URL: string = 
+import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:8080' : '')
+//'http://localhost:8080'
 export interface ContactPayload {
   name: string
   email: string
