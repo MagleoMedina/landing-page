@@ -31,7 +31,8 @@ class ProjectControllerTest {
 								new LocalizedText("Panel de administración", "Admin dashboard"),
 								List.of("React", "TypeScript"),
 								"https://github.com/MagleoMedina",
-								"https://github.com/MagleoMedina")))));
+								"https://github.com/MagleoMedina",
+								"/assets/projects/fmo.svg")))));
 
 		mockMvc.perform(get("/api/projects"))
 				.andExpect(status().isOk())

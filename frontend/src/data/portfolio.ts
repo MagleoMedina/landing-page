@@ -21,6 +21,7 @@ export interface Project {
   tags: string[]
   repo: string
   demo: string
+  image: string
 }
 
 export type ProjectCategoryId = 'web' | 'mobile' | 'games' | 'tools'
@@ -53,7 +54,7 @@ export interface TechGroup {
 }
 
 export const profile: ProfileData = {
-  name: 'Tu Nombre',
+  name: 'Magleo Medina',
   title: { es: 'Desarrollador Full Stack', en: 'Full Stack Developer' },
   handle: 'tunombre',
   status: 'Disponible',
@@ -85,6 +86,7 @@ export const projectCategories: ProjectCategory[] = [
         tags: ['React', 'TypeScript', 'Spring Boot', 'PostgreSQL'],
         repo: '#',
         demo: '#',
+        image: '#',
       },
       {
         title: { es: 'E-commerce API', en: 'E-commerce API' },
@@ -95,6 +97,7 @@ export const projectCategories: ProjectCategory[] = [
         tags: ['NestJS', 'JavaScript', 'MySQL'],
         repo: '#',
         demo: '#',
+        image: '#',
       },
     ],
   },
@@ -112,6 +115,7 @@ export const projectCategories: ProjectCategory[] = [
         tags: ['React Native', 'TypeScript', 'SQLite'],
         repo: '#',
         demo: '#',
+        image: '#',
       },
     ],
   },
@@ -129,6 +133,7 @@ export const projectCategories: ProjectCategory[] = [
         tags: ['Python', 'Pygame'],
         repo: '#',
         demo: '#',
+        image: '#',
       },
       {
         title: { es: 'Puzzle Arcade', en: 'Puzzle Arcade' },
@@ -139,6 +144,7 @@ export const projectCategories: ProjectCategory[] = [
         tags: ['JavaScript', 'HTML', 'CSS'],
         repo: '#',
         demo: '#',
+        image: '#',
       },
     ],
   },
@@ -156,6 +162,7 @@ export const projectCategories: ProjectCategory[] = [
         tags: ['Java', 'Spring Boot', 'SQLite'],
         repo: '#',
         demo: '#',
+        image: '#',
       },
     ],
   },

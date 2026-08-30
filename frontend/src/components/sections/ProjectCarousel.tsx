@@ -3,13 +3,14 @@ import { FaChevronLeft, FaChevronRight } from 'react-icons/fa6'
 import ElectricBorder from '../ElectricBorder'
 import { useLang } from '../../use-lang'
 import type { Project, ProjectCategory } from '../../data/portfolio'
+import { TagIcon } from '../TagIcon'
 import { animateScrollTo, ANIM_DURATION } from './animatedScroll'
 
 interface ProjectCarouselProps {
   category: ProjectCategory
 }
 
-const AUTOPLAY_DELAY = 4500
+const AUTOPLAY_SPEED = 70
 const CARD_GAP = 24
 const NORMALIZE_DELAY = 150
 
@@ -92,13 +93,27 @@ export default function ProjectCarousel({ category }: ProjectCarouselProps) {
   }, [])
 
   useEffect(() => {
-    const id = window.setInterval(() => {
-      if (!pausedRef.current) {
-        advanceNext()
+    const track = trackRef.current
+    if (!track) return
+
+    let raf: number
+    let last = performance.now()
+
+    const loop = (now: number) => {
+      const dt = (now - last) / 1000
+      last = now
+      if (!pausedRef.current && !animatingRef.current && !document.hidden) {
+        track.scrollLeft += AUTOPLAY_SPEED * dt
+        const width = originWidth()
+        if (width > 0 && track.scrollLeft >= width) {
+          track.scrollLeft -= width
+        }
       }
-    }, AUTOPLAY_DELAY)
-    return () => window.clearInterval(id)
-  }, [advanceNext])
+      raf = requestAnimationFrame(loop)
+    }
+    raf = requestAnimationFrame(loop)
+    return () => cancelAnimationFrame(raf)
+  }, [originWidth])
 
   useEffect(() => {
     const track = trackRef.current
@@ -194,10 +209,13 @@ function ProjectCard({ project }: { project: Project }) {
     <article className="project-card">
       <h4 className="project-title">{project.title[lang]}</h4>
       <p className="project-description">{project.description[lang]}</p>
+      {project.image && (
+        <img className="project-image" src={project.image} alt={project.title[lang]} loading="lazy" />
+      )}
       <ul className="project-tags">
         {project.tags.map((tag) => (
-          <li key={tag} className="chip">
-            {tag}
+          <li key={tag} className="chip" title={tag}>
+            <TagIcon tag={tag} />
           </li>
         ))}
       </ul>

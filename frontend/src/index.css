@@ -388,10 +388,12 @@ a:hover {
 .chip {
   display: inline-flex;
   align-items: center;
-  padding: 5px 12px;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
   border-radius: 999px;
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 18px;
   background: var(--accent-soft);
   color: var(--accent);
   border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
@@ -523,6 +525,16 @@ a:hover {
 .project-description {
   color: var(--text-muted);
   flex: 1;
+}
+
+.project-image {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto;
+  object-fit: contain;
+  flex: none;
+  display: block;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.18));
 }
 
 .project-tags {

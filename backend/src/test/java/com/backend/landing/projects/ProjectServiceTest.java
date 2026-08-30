@@ -38,6 +38,7 @@ class ProjectServiceTest {
 				assertThat(project.description().es()).isNotBlank();
 				assertThat(project.description().en()).isNotBlank();
 				assertThat(project.tags()).isNotEmpty();
+				assertThat(project.image()).startsWith("/assets/projects/").endsWith(".svg");
 				if (project.repo().isBlank()) {
 					assertThat(project.demo()).isBlank();
 				} else {

@@ -7,5 +7,6 @@ public record Project(
 		LocalizedText description,
 		List<String> tags,
 		String repo,
-		String demo) {
+		String demo,
+		String image) {
 }
