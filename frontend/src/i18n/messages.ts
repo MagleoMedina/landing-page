@@ -36,6 +36,9 @@ export const messages = {
     'contact.success': '¡Mensaje enviado! Te responderé pronto.',
     'contact.errorGeneric': 'No se pudo enviar el mensaje.',
     'contact.socials': 'Mis redes sociales',
+    'contact.cv': 'Descarga mi CV',
+    'contact.cvSpanish': 'Currículum en español',
+    'contact.cvEnglish': 'Currículum en inglés',
     'footer.madeWith': 'Hecho con React, Vite y ReactBits.',
   },
   en: {
@@ -69,6 +72,9 @@ export const messages = {
     'contact.success': 'Message sent! I will get back to you soon.',
     'contact.errorGeneric': 'Could not send the message.',
     'contact.socials': 'My social media',
+    'contact.cv': 'Download my CV',
+    'contact.cvSpanish': 'Spanish resume',
+    'contact.cvEnglish': 'English resume',
     'footer.madeWith': 'Built with React, Vite and ReactBits.',
   },
 } as const satisfies Record<Lang, Record<string, string>>
