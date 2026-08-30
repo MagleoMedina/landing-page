@@ -54,8 +54,8 @@ export default function Hero() {
         </div>
         <div className="hero-card">
           <ProfileCard
-            name="Javi A. Torres"
-            title="Software Engineer"
+            name="Magleo Medina"
+            title="Informatics Engineer"
             showUserInfo={false}
             enableTilt
             enableMobileTilt={false}
