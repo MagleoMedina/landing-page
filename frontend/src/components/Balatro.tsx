@@ -154,7 +154,7 @@ export default function Balatro({
     let program: Program;
 
     function resize() {
-      renderer.setSize(container.offsetWidth, container.offsetHeight);
+      renderer.setSize(Math.round(container.offsetWidth / 2), Math.round(container.offsetHeight / 2));
       if (program) {
         program.uniforms.iResolution.value = [gl.canvas.width, gl.canvas.height, gl.canvas.width / gl.canvas.height];
       }

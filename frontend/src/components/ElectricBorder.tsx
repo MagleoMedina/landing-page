@@ -11,6 +11,9 @@ interface ElectricBorderProps {
   style?: CSSProperties;
 }
 
+const MAX_DPR = 1.75;
+const FRAME_INTERVAL = 1000 / 30;
+
 const ElectricBorder: React.FC<ElectricBorderProps> = ({
   children,
   color = '#5227FF',
@@ -25,6 +28,8 @@ const ElectricBorder: React.FC<ElectricBorderProps> = ({
   const animationRef = useRef<number | null>(null);
   const timeRef = useRef(0);
   const lastFrameTimeRef = useRef(0);
+  const lastDrawTimeRef = useRef(0);
+  const visibleRef = useRef(true);
 
   const random = useCallback((x: number): number => {
     return (Math.sin(x * 12.9898) * 43758.5453) % 1;
@@ -165,7 +170,7 @@ const ElectricBorder: React.FC<ElectricBorderProps> = ({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const octaves = 10;
+    const octaves = 6;
     const lacunarity = 1.6;
     const gain = 0.7;
     const amplitude = chaos;
@@ -179,7 +184,7 @@ const ElectricBorder: React.FC<ElectricBorderProps> = ({
       const width = rect.width + borderOffset * 2;
       const height = rect.height + borderOffset * 2;
 
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
       canvas.width = width * dpr;
       canvas.height = height * dpr;
       canvas.style.width = `${width}px`;
@@ -190,12 +195,17 @@ const ElectricBorder: React.FC<ElectricBorderProps> = ({
     };
 
     let { width, height } = updateSize();
-    let lastDpr = Math.min(window.devicePixelRatio || 1, 2);
+    let lastDpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
 
     const drawElectricBorder = (currentTime: number) => {
       if (!canvas || !ctx) return;
 
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      if (!visibleRef.current) {
+        animationRef.current = requestAnimationFrame(drawElectricBorder);
+        return;
+      }
+
+      const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
       if (dpr !== lastDpr) {
         lastDpr = dpr;
         const newSize = updateSize();
@@ -206,6 +216,12 @@ const ElectricBorder: React.FC<ElectricBorderProps> = ({
       const deltaTime = (currentTime - lastFrameTimeRef.current) / 1000;
       timeRef.current += deltaTime * speed;
       lastFrameTimeRef.current = currentTime;
+
+      if (currentTime - lastDrawTimeRef.current < FRAME_INTERVAL) {
+        animationRef.current = requestAnimationFrame(drawElectricBorder);
+        return;
+      }
+      lastDrawTimeRef.current = currentTime;
 
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -225,7 +241,7 @@ const ElectricBorder: React.FC<ElectricBorderProps> = ({
       const radius = Math.min(borderRadius, maxRadius);
 
       const approximatePerimeter = 2 * (borderWidth + borderHeight) + 2 * Math.PI * radius;
-      const sampleCount = Math.floor(approximatePerimeter / 2);
+      const sampleCount = Math.floor(approximatePerimeter / 3);
 
       ctx.beginPath();
 
@@ -280,6 +296,14 @@ const ElectricBorder: React.FC<ElectricBorderProps> = ({
     });
     resizeObserver.observe(container);
 
+    const visibilityObserver = new IntersectionObserver(
+      (entries) => {
+        visibleRef.current = entries[0]?.isIntersecting ?? true;
+      },
+      { rootMargin: '80px' }
+    );
+    visibilityObserver.observe(container);
+
     animationRef.current = requestAnimationFrame(drawElectricBorder);
 
     return () => {
@@ -287,6 +311,7 @@ const ElectricBorder: React.FC<ElectricBorderProps> = ({
         cancelAnimationFrame(animationRef.current);
       }
       resizeObserver.disconnect();
+      visibilityObserver.disconnect();
     };
   }, [color, speed, chaos, borderRadius, octavedNoise, getRoundedRectPoint]);
 

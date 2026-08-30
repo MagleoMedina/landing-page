@@ -164,6 +164,7 @@ export default function ProjectCarousel({ category }: ProjectCarouselProps) {
             key={project.title.es}
             color={category.color}
             borderRadius={16}
+            speed={1.8}
             className={cardClass}
           >
             <ProjectCard project={project} />
@@ -175,6 +176,7 @@ export default function ProjectCarousel({ category }: ProjectCarouselProps) {
               key={`${project.title.es}-clone`}
               color={category.color}
               borderRadius={16}
+              speed={1.8}
               className={cardClass}
             >
               <ProjectCard project={project} />

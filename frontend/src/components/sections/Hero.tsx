@@ -17,6 +17,7 @@ export default function Hero() {
           color2="#0b3d91"
           color3="#0a0a14"
           pixelFilter={700}
+          spinSpeed={12}
         />
       </div>
       <div className="hero-content container">
