@@ -1,7 +1,7 @@
 import { useState, type CSSProperties, type FormEvent } from 'react'
 import { FaFacebook, FaFilePdf, FaGithub, FaInstagram, FaLinkedin, FaTelegram, FaWhatsapp } from 'react-icons/fa6'
 import type { IconType } from 'react-icons'
-import { sendMessage } from '../ContactService'
+import { sendMessage } from '../../api'
 import { socials } from '../../data/portfolio'
 import { useLang } from '../../use-lang'
 

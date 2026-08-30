@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { ProjectCategory } from './data/portfolio'
-import { fetchProjects } from './components/ProjectsService'
+import { fetchProjects } from './api'
 
 export type ProjectsStatus = 'loading' | 'ready' | 'error'
 
