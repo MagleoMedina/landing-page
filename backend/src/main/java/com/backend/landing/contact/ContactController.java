@@ -14,9 +14,11 @@ import jakarta.validation.Valid;
 public class ContactController {
 
 	private final ContactEmailService contactEmailService;
+	private final MailConfig mailConfig;
 
-	public ContactController(ContactEmailService contactEmailService) {
+	public ContactController(ContactEmailService contactEmailService, MailConfig mailConfig) {
 		this.contactEmailService = contactEmailService;
+		this.mailConfig = mailConfig;
 	}
 
 	@PostMapping
@@ -26,9 +28,8 @@ public class ContactController {
 	}
 
 	@GetMapping("/status")
-	public ResponseEntity<?> healthCheck() {
-		String status = "El backend de render esta activooooo";	
-		return ResponseEntity.ok(status);
+	public MailConfig.Status healthCheck() {
+		return mailConfig.status();
 	}
 
 	public record ContactResponse(String status) {

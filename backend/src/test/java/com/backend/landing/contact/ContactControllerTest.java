@@ -1,10 +1,13 @@
 package com.backend.landing.contact;
 
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -20,6 +23,9 @@ class ContactControllerTest {
 
 	@MockitoBean
 	private ContactEmailService contactEmailService;
+
+	@MockitoBean
+	private MailConfig mailConfig;
 
 	@Test
 	void sendValidContactReturnsOk() throws Exception {
@@ -42,6 +48,31 @@ class ContactControllerTest {
 
 		mockMvc.perform(post("/api/contact").contentType(MediaType.APPLICATION_JSON).content(body))
 				.andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$.message").value(org.hamcrest.Matchers.containsString("obligatorio")));
+				.andExpect(jsonPath("$.message").value(Matchers.containsString("obligatorio")));
+	}
+
+	@Test
+	void statusReturnsMailConfigState() throws Exception {
+		MailConfig.Status status = new MailConfig.Status(true, "dev@example.com", true, "to@example.com",
+				"smtp.gmail.com:587", "SMTP listo");
+		when(mailConfig.status()).thenReturn(status);
+
+		mockMvc.perform(get("/api/contact/status"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.configuredMail").value(true))
+				.andExpect(jsonPath("$.hasPassword").value(true))
+				.andExpect(jsonPath("$.recipient").value("to@example.com"));
+	}
+
+	@Test
+	void statusReflectsMissingConfig() throws Exception {
+		MailConfig.Status status = new MailConfig.Status(false, "", false, "", "no configurado",
+				"Faltan MAIL_USERNAME / MAIL_PASSWORD / CONTACT_TO en el entorno del backend");
+		when(mailConfig.status()).thenReturn(status);
+
+		mockMvc.perform(get("/api/contact/status"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.configuredMail").value(false))
+				.andExpect(jsonPath("$.hasPassword").value(false));
 	}
 }

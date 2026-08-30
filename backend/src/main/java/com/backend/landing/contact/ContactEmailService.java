@@ -1,27 +1,45 @@
 package com.backend.landing.contact;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 
 @Service
 public class ContactEmailService {
 
+	private static final Logger log = LoggerFactory.getLogger(ContactEmailService.class);
+
 	private final JavaMailSender mailSender;
 	private final String to;
 	private final String from;
+	private final MailConfig mailConfig;
 
 	public ContactEmailService(JavaMailSender mailSender,
 			@Value("${app.contact.to:}") String to,
-			@Value("${app.contact.from:}") String from) {
+			@Value("${app.contact.from:}") String from,
+			MailConfig mailConfig) {
 		this.mailSender = mailSender;
 		this.to = to;
 		this.from = from;
+		this.mailConfig = mailConfig;
+	}
+
+	@PostConstruct
+	void logConfig() {
+		if (mailConfig.isConfigured()) {
+			log.info("SMTP configurado: {} -> {} ({})", mailConfig.getUsername(), to, mailConfig.status().smtp());
+		} else {
+			log.warn("SMTP NO configurado: falta definir MAIL_USERNAME / MAIL_PASSWORD / CONTACT_TO "
+					+ "en el entorno (Render -> Environment). Ver GET /api/contact/status");
+		}
 	}
 
 	public void send(ContactRequest request) {
