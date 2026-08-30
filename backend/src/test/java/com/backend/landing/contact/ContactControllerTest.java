@@ -75,4 +75,10 @@ class ContactControllerTest {
 				.andExpect(jsonPath("$.configuredMail").value(false))
 				.andExpect(jsonPath("$.hasPassword").value(false));
 	}
+
+	@Test
+	void unknownRouteReturnsNotFound() throws Exception {
+		mockMvc.perform(get("/api/contact/unknown"))
+				.andExpect(status().isNotFound());
+	}
 }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -22,23 +23,42 @@ public class GlobalExceptionHandler {
 		String message = ex.getBindingResult().getFieldErrors().stream()
 				.map(FieldError::getDefaultMessage)
 				.collect(Collectors.joining(", "));
-		return new ErrorResponse(message);
+		return new ErrorResponse(message, null);
 	}
 
 	@ExceptionHandler(EmailSendException.class)
 	@ResponseStatus(HttpStatus.BAD_GATEWAY)
 	public ErrorResponse handleEmailSend(EmailSendException ex) {
-		log.error("Fallo al enviar el correo de contacto. Revisa la configuración SMTP (MAIL_USERNAME/MAIL_PASSWORD/CONTACT_TO)", ex);
-		return new ErrorResponse("No se pudo enviar el mensaje. Verifica la configuración del correo del servidor.");
+		String cause = rootCauseMessage(ex);
+		log.error("Fallo al enviar el correo de contacto. Revisa la configuración SMTP "
+				+ "(MAIL_USERNAME/MAIL_PASSWORD/CONTACT_TO). Causa: {}", cause, ex);
+		return new ErrorResponse("No se pudo enviar el mensaje. Verifica la configuración del correo del servidor.",
+				cause);
+	}
+
+	private static String rootCauseMessage(Throwable ex) {
+		Throwable root = ex;
+		while (root.getCause() != null && root.getCause() != root) {
+			root = root.getCause();
+		}
+		String message = root.getMessage();
+		return root.getClass().getSimpleName() + (message == null ? "" : ": " + message);
+	}
+
+	@ExceptionHandler(NoResourceFoundException.class)
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	public ErrorResponse handleNotFound(NoResourceFoundException ex) {
+		log.debug("Recurso no encontrado: {}", ex.getResourcePath());
+		return new ErrorResponse("Recurso no encontrado", null);
 	}
 
 	@ExceptionHandler(Exception.class)
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	public ErrorResponse handleGeneric(Exception ex) {
 		log.error("Error no controlado", ex);
-		return new ErrorResponse("No se pudo procesar la solicitud");
+		return new ErrorResponse("No se pudo procesar la solicitud", null);
 	}
 
-	public record ErrorResponse(String message) {
+	public record ErrorResponse(String message, String cause) {
 	}
 }
