@@ -133,7 +133,7 @@ export default function Balatro({
   pixelFilter = 745.0,
   spinEase = 1.0,
   isRotate = false,
-  mouseInteraction = true
+  mouseInteraction = false
 }: BalatroProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const colorsRef = useRef({ color1, color2, color3 });
