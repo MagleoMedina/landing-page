@@ -34,10 +34,8 @@ public class ContactEmailService {
 			helper.setReplyTo(request.email());
 			helper.setText(buildHtml(request), true);
 			mailSender.send(mimeMessage);
-		} catch (MessagingException e) {
-			throw new IllegalStateException("No se pudo preparar el mensaje de correo", e);
-		} catch (MailException e) {
-			throw e;
+		} catch (MessagingException | MailException e) {
+			throw new EmailSendException("No se pudo enviar el correo", e);
 		}
 	}
 
