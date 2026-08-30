@@ -2,3 +2,8 @@
 .env
 .env.local
 .env.*.local
+frontend/.env.example
+frontend/.env.production
+/backend/target
+/backend/target
+/backend/target
