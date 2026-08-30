@@ -4,87 +4,47 @@ import ElectricBorder from '../ElectricBorder'
 import { useLang } from '../../use-lang'
 import type { Project, ProjectCategory } from '../../data/portfolio'
 import { TagIcon } from '../TagIcon'
-import { animateScrollTo, ANIM_DURATION } from './animatedScroll'
 
 interface ProjectCarouselProps {
   category: ProjectCategory
 }
 
-const AUTOPLAY_SPEED = 70
 const CARD_GAP = 24
-const NORMALIZE_DELAY = 150
+const AUTOPLAY_MS = 4200
 
 export default function ProjectCarousel({ category }: ProjectCarouselProps) {
   const { lang } = useLang()
   const trackRef = useRef<HTMLDivElement>(null)
   const pausedRef = useRef(false)
-  const animatingRef = useRef(false)
-  const animationCancelRef = useRef<(() => void) | null>(null)
 
-  const originWidth = useCallback(() => {
+  const stepSize = useCallback(() => {
     const track = trackRef.current
     const card = track?.firstElementChild as HTMLElement | null
-    const cardWidth = card?.offsetWidth ?? 0
-    const count = category.projects.length
-    return count * cardWidth + (count - 1) * CARD_GAP
-  }, [category.projects.length])
+    return (card?.offsetWidth ?? 0) + CARD_GAP
+  }, [])
 
-  const wrapIfCloned = useCallback(() => {
-    const track = trackRef.current
-    if (!track) return
-    const width = originWidth()
-    if (width > 0 && track.scrollLeft >= width) {
-      track.scrollLeft -= width
-    }
-  }, [originWidth])
+  const slideTo = useCallback(
+    (dir: -1 | 1) => {
+      const track = trackRef.current
+      if (!track) return
+      const step = stepSize()
+      const maxScroll = track.scrollWidth - track.clientWidth
+      if (step <= CARD_GAP || maxScroll <= 0) return
 
-  const advanceNext = useCallback(() => {
-    const track = trackRef.current
-    if (!track || animatingRef.current) return
-    const card = track.firstElementChild as HTMLElement | null
-    if (!card) return
-    const maxScroll = track.scrollWidth - track.clientWidth
-    if (maxScroll <= 0) return
+      const page = Math.round(track.scrollLeft / step)
+      const lastPage = Math.round(maxScroll / step)
+      let next = page + dir
+      if (next > lastPage) next = 0
+      if (next < 0) next = lastPage
+      track.scrollTo({ left: Math.min(next * step, maxScroll), behavior: 'smooth' })
+    },
+    [stepSize]
+  )
 
-    const step = card.offsetWidth + CARD_GAP
-    const target = Math.min(track.scrollLeft + step, maxScroll)
-
-    animationCancelRef.current?.()
-    animatingRef.current = true
-    animationCancelRef.current = animateScrollTo(track, target, ANIM_DURATION, () => {
-      animatingRef.current = false
-      wrapIfCloned()
-    })
-  }, [wrapIfCloned])
-
-  const advancePrev = useCallback(() => {
-    const track = trackRef.current
-    if (!track || animatingRef.current) return
-    const card = track.firstElementChild as HTMLElement | null
-    if (!card) return
-
-    const step = card.offsetWidth + CARD_GAP
-    let target = track.scrollLeft - step
-    if (target < 0) {
-      const width = originWidth()
-      if (width > 0) {
-        track.scrollLeft = width
-        target = width - step
-      } else {
-        target = 0
-      }
-    }
-
-    animationCancelRef.current?.()
-    animatingRef.current = true
-    animationCancelRef.current = animateScrollTo(track, target, ANIM_DURATION, () => {
-      animatingRef.current = false
-    })
-  }, [originWidth])
+  const advanceNext = useCallback(() => slideTo(1), [slideTo])
+  const advancePrev = useCallback(() => slideTo(-1), [slideTo])
 
   const pause = useCallback(() => {
-    animationCancelRef.current?.()
-    animatingRef.current = false
     pausedRef.current = true
   }, [])
 
@@ -93,49 +53,12 @@ export default function ProjectCarousel({ category }: ProjectCarouselProps) {
   }, [])
 
   useEffect(() => {
-    const track = trackRef.current
-    if (!track) return
-
-    let raf: number
-    let last = performance.now()
-
-    const loop = (now: number) => {
-      const dt = (now - last) / 1000
-      last = now
-      if (!pausedRef.current && !animatingRef.current && !document.hidden) {
-        track.scrollLeft += AUTOPLAY_SPEED * dt
-        const width = originWidth()
-        if (width > 0 && track.scrollLeft >= width) {
-          track.scrollLeft -= width
-        }
-      }
-      raf = requestAnimationFrame(loop)
-    }
-    raf = requestAnimationFrame(loop)
-    return () => cancelAnimationFrame(raf)
-  }, [originWidth])
-
-  useEffect(() => {
-    const track = trackRef.current
-    if (!track) return
-
-    let timeout: number | undefined
-    const onScroll = () => {
-      window.clearTimeout(timeout)
-      timeout = window.setTimeout(() => {
-        const width = originWidth()
-        if (width > 0 && track.scrollLeft >= width) {
-          track.scrollLeft -= width
-        }
-      }, NORMALIZE_DELAY)
-    }
-
-    track.addEventListener('scroll', onScroll, { passive: true })
-    return () => {
-      window.clearTimeout(timeout)
-      track.removeEventListener('scroll', onScroll)
-    }
-  }, [originWidth])
+    const id = window.setInterval(() => {
+      if (document.hidden || pausedRef.current) return
+      slideTo(1)
+    }, AUTOPLAY_MS)
+    return () => window.clearInterval(id)
+  }, [slideTo])
 
   const cardClass = 'project-card-wrap project-track-card'
 
@@ -185,19 +108,6 @@ export default function ProjectCarousel({ category }: ProjectCarouselProps) {
             <ProjectCard project={project} />
           </ElectricBorder>
         ))}
-        <div className="projects-clone" aria-hidden="true" inert>
-          {category.projects.map((project) => (
-            <ElectricBorder
-              key={`${project.title.es}-clone`}
-              color={category.color}
-              borderRadius={16}
-              speed={1.8}
-              className={cardClass}
-            >
-              <ProjectCard project={project} />
-            </ElectricBorder>
-          ))}
-        </div>
       </div>
     </div>
   )
@@ -219,18 +129,13 @@ function ProjectCard({ project }: { project: Project }) {
           </li>
         ))}
       </ul>
-      <div className="project-links">
-        {project.repo && (
+      {project.repo && (
+        <div className="project-links">
           <a className="btn btn-small" href={project.repo} target="_blank" rel="noreferrer">
             {t('projects.repo')}
           </a>
-        )}
-        {project.demo && (
-          <a className="btn btn-small btn-ghost" href={project.demo} target="_blank" rel="noreferrer">
-            {t('projects.demo')}
-          </a>
-        )}
-      </div>
+        </div>
+      )}
     </article>
   )
 }

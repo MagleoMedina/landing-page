@@ -164,7 +164,7 @@ a:hover {
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 28px;
+  gap: 36px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -173,7 +173,7 @@ a:hover {
 .nav-links a {
   color: var(--text-muted);
   font-weight: 500;
-  font-size: 15px;
+  font-size: 17px;
   transition: color 0.15s ease;
 }
 
@@ -457,11 +457,12 @@ a:hover {
   gap: var(--card-gap, 24px);
   overflow-x: auto;
   overflow-y: clip;
-  scroll-snap-type: x proximity;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
   scrollbar-width: none;
-  scroll-padding-inline: 8px;
   padding: 20px 8px;
   margin-inline: -8px;
+  border-radius: 24px;
 }
 
 .projects-carousel::-webkit-scrollbar {
@@ -477,15 +478,6 @@ a:hover {
   flex: 0 0 clamp(240px, 78vw, 320px);
   min-height: 300px;
   scroll-snap-align: start;
-}
-
-.projects-clone {
-  display: flex;
-  gap: var(--card-gap, 24px);
-}
-
-.projects-clone .project-track-card {
-  scroll-snap-align: none;
 }
 
 .project-card-wrap {
@@ -553,6 +545,7 @@ a:hover {
 .project-links {
   display: flex;
   gap: 10px;
+  margin-top: auto;
 }
 
 .project-card-skeleton {
