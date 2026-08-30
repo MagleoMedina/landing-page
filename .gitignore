@@ -1,0 +1,4 @@
+# Entorno local (secretos: credenciales SMTP, etc.)
+.env
+.env.local
+.env.*.local

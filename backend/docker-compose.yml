@@ -1,0 +1,14 @@
+services:
+  landing-backend:
+    build: .
+    container_name: landing-backend
+    ports:
+      - "8080:8080"
+    environment:
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      CONTACT_TO: ${CONTACT_TO:-}
+    # Opcional: host/port SMTP distintos de Gmail
+    # MAIL_HOST: ${MAIL_HOST:-smtp.gmail.com}
+    # MAIL_PORT: ${MAIL_PORT:-587}
+    restart: unless-stopped
