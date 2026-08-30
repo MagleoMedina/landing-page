@@ -6,8 +6,7 @@ services:
       - "8080:8080"
     env_file:
       - ../.env
-    # Opcionales: host/port SMTP distintos de Gmail
+    # Opcionales: remitente/destinatario distintos
     # environment:
-    #   MAIL_HOST: smtp.tucorreo.com
-    #   MAIL_PORT: "587"
+    #   RESEND_FROM: Portfolio <hello@tudominio.com>
     restart: unless-stopped

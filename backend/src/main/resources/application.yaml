@@ -6,24 +6,11 @@ spring:
     name: landing
   config:
     import: optional:file:../.env[.properties]
-  mail:
-    host: ${MAIL_HOST:smtp.gmail.com}
-    port: ${MAIL_PORT:587}
-    username: ${MAIL_USERNAME:}
-    password: ${MAIL_PASSWORD:}
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-          connectiontimeout: 10000
-          timeout: 10000
-          writetimeout: 10000
+
+resend:
+  api-key: ${RESEND_API_KEY:}
+  from: ${RESEND_FROM:Portfolio <onboarding@resend.dev>}
 
 app:
   contact:
     to: ${CONTACT_TO:}
-    from: ${CONTACT_FROM:${MAIL_USERNAME:}}
-  cors:
-    allowed-origins: ${CORS_ALLOWED_ORIGINS:*}

@@ -54,26 +54,26 @@ class ContactControllerTest {
 	@Test
 	void statusReturnsMailConfigState() throws Exception {
 		MailConfig.Status status = new MailConfig.Status(true, "dev@example.com", true, "to@example.com",
-				"smtp.gmail.com:587", "SMTP listo");
+				"https://api.resend.com/emails", "Envío por Resend listo");
 		when(mailConfig.status()).thenReturn(status);
 
 		mockMvc.perform(get("/api/contact/status"))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.configuredMail").value(true))
-				.andExpect(jsonPath("$.hasPassword").value(true))
+				.andExpect(jsonPath("$.hasCredential").value(true))
 				.andExpect(jsonPath("$.recipient").value("to@example.com"));
 	}
 
 	@Test
 	void statusReflectsMissingConfig() throws Exception {
-		MailConfig.Status status = new MailConfig.Status(false, "", false, "", "no configurado",
-				"Faltan MAIL_USERNAME / MAIL_PASSWORD / CONTACT_TO en el entorno del backend");
+		MailConfig.Status status = new MailConfig.Status(false, "", false, "", "",
+				"Faltan RESEND_API_KEY / CONTACT_TO en el entorno del backend");
 		when(mailConfig.status()).thenReturn(status);
 
 		mockMvc.perform(get("/api/contact/status"))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.configuredMail").value(false))
-				.andExpect(jsonPath("$.hasPassword").value(false));
+				.andExpect(jsonPath("$.hasCredential").value(false));
 	}
 
 	@Test

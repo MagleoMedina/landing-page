@@ -1,60 +1,117 @@
 package com.backend.landing.contact;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.MailException;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.PostConstruct;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
 
 @Service
 public class ContactEmailService {
 
 	private static final Logger log = LoggerFactory.getLogger(ContactEmailService.class);
+	private static final URI RESEND_URL = URI.create("https://api.resend.com/emails");
 
-	private final JavaMailSender mailSender;
-	private final String to;
+	private final HttpClient httpClient = HttpClient.newBuilder()
+			.connectTimeout(Duration.ofSeconds(15))
+			.build();
+	private final String apiKey;
 	private final String from;
+	private final String to;
 	private final MailConfig mailConfig;
 
-	public ContactEmailService(JavaMailSender mailSender,
+	public ContactEmailService(
+			@Value("${resend.api-key:}") String apiKey,
+			@Value("${resend.from:}") String from,
 			@Value("${app.contact.to:}") String to,
-			@Value("${app.contact.from:}") String from,
 			MailConfig mailConfig) {
-		this.mailSender = mailSender;
-		this.to = to;
+		this.apiKey = apiKey;
 		this.from = from;
+		this.to = to;
 		this.mailConfig = mailConfig;
 	}
 
 	@PostConstruct
 	void logConfig() {
 		if (mailConfig.isConfigured()) {
-			log.info("SMTP configurado: {} -> {} ({})", mailConfig.getUsername(), to, mailConfig.status().smtp());
+			log.info("Envío de correo configurado con Resend: {} -> {} ({})", from, to, mailConfig.endpoint());
 		} else {
-			log.warn("SMTP NO configurado: falta definir MAIL_USERNAME / MAIL_PASSWORD / CONTACT_TO "
+			log.warn("Correo NO configurado: falta definir RESEND_API_KEY / CONTACT_TO "
 					+ "en el entorno (Render -> Environment). Ver GET /api/contact/status");
 		}
 	}
 
 	public void send(ContactRequest request) {
-		try {
-			MimeMessage mimeMessage = mailSender.createMimeMessage();
-			MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-			helper.setFrom(from.isBlank() ? "no-reply@localhost" : from);
-			helper.setTo(to);
-			helper.setSubject("Nuevo mensaje desde el portfolio");
-			helper.setReplyTo(request.email());
-			helper.setText(buildHtml(request), true);
-			mailSender.send(mimeMessage);
-		} catch (MessagingException | MailException e) {
-			throw new EmailSendException("No se pudo enviar el correo", e);
+		if (apiKey.isBlank()) {
+			throw new EmailSendException("Falta RESEND_API_KEY en el entorno del backend", null);
 		}
+		if (to.isBlank()) {
+			throw new EmailSendException("Falta CONTACT_TO en el entorno del backend", null);
+		}
+		try {
+			String payload = """
+					{"from":%s,"to":[%s],"subject":"Nuevo mensaje desde el portfolio","html":%s}\
+					""".formatted(json(from), json(to), json(buildHtml(request)));
+
+			HttpRequest httpRequest = HttpRequest.newBuilder(RESEND_URL)
+					.timeout(Duration.ofSeconds(20))
+					.header("Authorization", "Bearer " + apiKey)
+					.header("Content-Type", "application/json")
+					.POST(HttpRequest.BodyPublishers.ofString(payload, StandardCharsets.UTF_8))
+					.build();
+
+			HttpResponse<String> response = httpClient.send(httpRequest,
+					HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+
+			if (response.statusCode() != 200) {
+				throw new EmailSendException(
+						"Resend respondió " + response.statusCode() + ": " + truncate(response.body(), 200), null);
+			}
+		} catch (IOException e) {
+			throw new EmailSendException("No se pudo conectar con el servicio de correo (Resend)", e);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new EmailSendException("Envío de correo interrumpido", e);
+		}
+	}
+
+	private static String truncate(String value, int max) {
+		if (value == null || value.length() <= max) {
+			return value == null ? "" : value;
+		}
+		return value.substring(0, max) + "...";
+	}
+
+	private static String json(String value) {
+		StringBuilder sb = new StringBuilder("\"");
+		for (int i = 0; i < value.length(); i++) {
+			char c = value.charAt(i);
+			switch (c) {
+				case '"' -> sb.append("\\\"");
+				case '\\' -> sb.append("\\\\");
+				case '\n' -> sb.append("\\n");
+				case '\r' -> sb.append("\\r");
+				case '\t' -> sb.append("\\t");
+				default -> {
+					if (c < 0x20) {
+						sb.append(String.format("\\u%04x", (int) c));
+					} else {
+						sb.append(c);
+					}
+				}
+			}
+		}
+		return sb.append('"').toString();
 	}
 
 	private String buildHtml(ContactRequest request) {

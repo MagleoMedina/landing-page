@@ -30,8 +30,8 @@ public class GlobalExceptionHandler {
 	@ResponseStatus(HttpStatus.BAD_GATEWAY)
 	public ErrorResponse handleEmailSend(EmailSendException ex) {
 		String cause = rootCauseMessage(ex);
-		log.error("Fallo al enviar el correo de contacto. Revisa la configuración SMTP "
-				+ "(MAIL_USERNAME/MAIL_PASSWORD/CONTACT_TO). Causa: {}", cause, ex);
+		log.error("Fallo al enviar el correo de contacto. Revisa la configuración del envío "
+				+ "(RESEND_API_KEY/CONTACT_TO). Causa: {}", cause, ex);
 		return new ErrorResponse("No se pudo enviar el mensaje. Verifica la configuración del correo del servidor.",
 				cause);
 	}
