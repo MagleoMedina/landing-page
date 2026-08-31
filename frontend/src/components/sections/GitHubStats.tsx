@@ -1,5 +1,6 @@
 import { useLang } from '../../use-lang'
 import { useTheme } from '../../use-theme'
+import LazyImage from '../LazyImage'
 
 export default function GitHubStats() {
   const { lang, t } = useLang()
@@ -11,7 +12,7 @@ export default function GitHubStats() {
   return (
     <div className="stack-gstats">
       <h3 className="stack-group-title">{t('stack.github')}</h3>
-      <img
+      <LazyImage
         src={theme === 'dark' ? statsDark : statsLight}
         alt={t('stack.githubAlt')}
         width="495"

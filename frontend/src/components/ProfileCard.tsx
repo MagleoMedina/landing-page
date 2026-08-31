@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useCallback, useMemo } from 'react';
 import './ProfileCard.css';
+import LazyImage from './LazyImage';
 
 interface ProfileCardProps {
   avatarUrl: string;
@@ -339,29 +340,20 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
             <div className="pc-shine" />
             <div className="pc-glare" />
             <div className="pc-content pc-avatar-content">
-              <img
+              <LazyImage
                 className="avatar"
                 src={avatarUrl}
                 alt={`${name || 'User'} avatar`}
                 loading="lazy"
-                onError={e => {
-                  const t = e.target as HTMLImageElement;
-                  t.style.display = 'none';
-                }}
               />
               {showUserInfo && (
                 <div className="pc-user-info">
                   <div className="pc-user-details">
                     <div className="pc-mini-avatar">
-                      <img
+                      <LazyImage
                         src={miniAvatarUrl || avatarUrl}
                         alt={`${name || 'User'} mini avatar`}
                         loading="lazy"
-                        onError={e => {
-                          const t = e.target as HTMLImageElement;
-                          t.style.opacity = '0.5';
-                          t.src = avatarUrl;
-                        }}
                       />
                     </div>
                     <div className="pc-user-text">

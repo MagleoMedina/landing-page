@@ -4,6 +4,7 @@ import ElectricBorder from '../ElectricBorder'
 import { useLang } from '../../use-lang'
 import type { Project, ProjectCategory } from '../../data/portfolio'
 import { TagIcon } from '../TagIcon'
+import LazyImage from '../LazyImage'
 
 interface ProjectCarouselProps {
   category: ProjectCategory
@@ -120,7 +121,7 @@ function ProjectCard({ project }: { project: Project }) {
       <h4 className="project-title">{project.title[lang]}</h4>
       <p className="project-description">{project.description[lang]}</p>
       {project.image && (
-        <img className="project-image" src={project.image} alt={project.title[lang]} loading="lazy" />
+        <LazyImage className="project-image" src={project.image} alt={project.title[lang]} loading="lazy" />
       )}
       <ul className="project-tags">
         {project.tags.map((tag) => (
